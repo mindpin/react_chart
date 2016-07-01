@@ -1,0 +1,12 @@
+development:
+  sessions:
+    default:
+      database: react_chart_dev
+      hosts:
+        - localhost:27017
+test:
+  sessions:
+    default:
+      database: react_chart_test
+      hosts:
+        - localhost:27017
