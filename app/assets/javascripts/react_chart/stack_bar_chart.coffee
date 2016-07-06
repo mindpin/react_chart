@@ -33,7 +33,8 @@
 
      tip = d3.tip()
       .attr('class', 'd3-tip')
-      .offset([-10, 0])
+      .offset([100, 0])
+      .style("pointer-events", "none")
       .html (d)->
         for i in [0..city_array.length - 1]
           if city_array[i] == d.x
@@ -51,159 +52,234 @@
      stack = d3.layout.stack()
 
      stack(fruit_nums)
-     # 在y轴上绘制
-     # yScale = d3.scale.ordinal()
-     #   .domain(d3.range(dataset[0].length))
-     #   .rangeRoundBands([padding.bottom,height - padding.top],0.05)
 
-     # rScale = d3.scale.ordinal()
-     #   .domain(d3.range(["","北京","上海","广州",""]))
-     #   .range([padding.bottom, 117, 248, 379, height - padding.top],0.05)
+     if @props.data.type == "vertical"
+       # 在y轴上绘制
+       yScale = d3.scale.ordinal()
+         .domain(d3.range(fruit_nums[0].length))
+         .rangeRoundBands([padding.bottom,height - padding.top],0.05)
 
-     # xScale = d3.scale.linear()
-     #   .domain([0,
-     #     d3.max(dataset,
-     #       (d)->
-     #         return d3.max(d,
-     #           (d)->
-     #             return d.y0 + d.y
-     #         )
-     #     )
-     #   ])
-     #   .range(width - padding.left, padding.right)
+       rScale = d3.scale.ordinal()
+         .domain(city_array)
+         .rangeRoundBands([padding.bottom,height - padding.top],0.05)
 
-     # xAxis = d3.svg.axis()
-     #  .scale(yScale)
-     #  .orient("bottom")
+       xScale = d3.scale.linear()
+        .domain([0, 
+          d3.max(fruit_nums,
+            (d)->
+              return d3.max(d,
+                (d)->
+                  return d.y0 + d.y
+              )
+          )
+        ])
+        .range([padding.left, width - padding.right])
 
-     # yAxis = d3.svg.axis()
-     #  .scale(rScale)
-     #  .orient("left")
+       xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient("bottom")
 
-     # svg.append("g")
-     #  .attr("class", "x axis")
-     #  .attr("transform", "translate(0,550)")
-     #  .call(xAxis)
-      
-     # svg.append("g")
-     #  .attr("class", "y axis")
-     #  .attr("transform", "translate(50,0)")
-     #  .text(
-     #    (d)->
-     #      return d
-     #  )
-     #  .call(yAxis)
-     
-     #在x轴上绘制
-     xScale = d3.scale.ordinal()
-      .domain(d3.range(fruit_nums[0].length))
-      .rangeRoundBands([padding.left, width - padding.right],0.05)
+       yAxis = d3.svg.axis()
+        .scale(rScale)
+        .orient("left")
 
-     rScale = d3.scale.ordinal()
-      .domain(city_array)
-      .rangeRoundBands([padding.left, width - padding.right],0.05)
-
-     yScale = d3.scale.linear()
-      .domain([0, 
-        d3.max(fruit_nums,
-          (d)->
-            return d3.max(d,
-              (d)->
-                return d.y0 + d.y
-            )
+       groups = svg.selectAll("g")
+        .data(fruit_nums)
+        .enter()
+        .append("g")
+        .style("fill", 
+          (d,i)->
+            return colors(i)
         )
-      ])
-      .range([height - padding.bottom, padding.top])
 
-     xAxis = d3.svg.axis()
-      .scale(rScale)
-      .orient("bottom")
+       svg.call(tip)
 
-     yAxis = d3.svg.axis()
-      .scale(yScale)
-      .orient("left")
-     
-     groups = svg.selectAll("g")
-      .data(fruit_nums)
-      .enter()
-      .append("g")
-      .style("fill", 
-        (d,i)->
-          return colors(i)
-      )
+       rects = groups.selectAll("rect")
+        .data(
+          (d)->
+            return d
+        )
+        .enter()
+        .append("rect")
+        .attr("x",
+          (d)->
+            return  xScale(d.y0)
+        )
+        .attr("y",
+          (d,i)->
+            return yScale(i)
+        )
+        .attr("height", yScale.rangeBand())
+        .attr("width", 
+          (d)->
+            return xScale(d.y) - padding.left
+        )
+        .text(
+          (d)->
+            return xScale(d.y)
+        )
+        .on "mouseover", (d)->
+          tip.show(d)
+        .on "mouseout", (d)->
+          tip.hide(d)
 
-     svg.call(tip)
+       svg.selectAll("circle")
+        .data(fruit_nums)
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("cx", width - 40)
+        .attr("cy", 
+          (d,i)->
+            return height - 20 * i - padding.bottom
+        )
+        .attr("r", 5)
+        .style("fill", 
+          (d,i)->
+            return colors(i)
+        )
 
-     rects = groups.selectAll("rect")
-      .data(
-        (d)->
-          return d
-      )
-      .enter()
-      .append("rect")
-      .attr("x",
-        (d,i)->
-          return xScale(i)
-      )
-      .attr("y",
-        (d)->
-          return height + padding.bottom - (height - yScale(d.y0)) - (height - yScale(d.y))
-      )
-      .attr("height",
-        (d)->
-          return height - padding.bottom - yScale(d.y)
-      )
-      .attr("width", xScale.rangeBand())
-      .text(
-        (d)->
-          return height - yScale(d.y)
-      )
-      .on "mouseover", (d)->
-        tip.show(d)
-      .on "mouseout", (d)->
-        tip.hide(d)
+       svg.selectAll("text")
+        .data(@props.data.items)
+        .enter()
+        .append("text")
+        .attr("class", "text")
+        .attr("x", width - 35)
+        .attr("y",
+          (d,i)->
+            return height - 20 * i  - 45
+        )
+        .text(
+          (d)->
+            return d.name
+        )
 
-     svg.selectAll("circle")
-      .data(fruit_nums)
-      .enter()
-      .append("circle")
-      .attr("class", "circle")
-      .attr("cx", width - 40)
-      .attr("cy", 
-        (d,i)->
-          return height - 20 * i - padding.bottom
-      )
-      .attr("r", 5)
-      .style("fill", 
-        (d,i)->
-          return colors(i)
-      )
+       svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0,550)")
+        .call(xAxis)
+        
+       svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(50,0)")
+        .text(
+          (d)->
+            return d
+        )
+        .call(yAxis)
+     if @props.data.type == "horizontal"
+       # 在x轴上绘制
+       xScale = d3.scale.ordinal()
+        .domain(d3.range(fruit_nums[0].length))
+        .rangeRoundBands([padding.left, width - padding.right],0.05)
 
-     svg.selectAll("text")
-      .data(@props.data.items)
-      .enter()
-      .append("text")
-      .attr("class", "text")
-      .attr("x", width - 35)
-      .attr("y",
-        (d,i)->
-          return height - 20 * i  - 45
-      )
-      .text(
-        (d)->
-          return d.name
-      )
+       rScale = d3.scale.ordinal()
+        .domain(city_array)
+        .rangeRoundBands([padding.left, width - padding.right],0.05)
 
-     svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + (height - padding.bottom) + ")")
-      .text(
-        (d)->
-          return d
-      )
-      .call(xAxis)
-      
-     svg.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + padding.left + ",0)")
-      .call(yAxis)
+       yScale = d3.scale.linear()
+        .domain([0, 
+          d3.max(fruit_nums,
+            (d)->
+              return d3.max(d,
+                (d)->
+                  return d.y0 + d.y
+              )
+          )
+        ])
+        .range([height - padding.bottom, padding.top])
+
+       xAxis = d3.svg.axis()
+        .scale(rScale)
+        .orient("bottom")
+
+       yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+       
+       groups = svg.selectAll("g")
+        .data(fruit_nums)
+        .enter()
+        .append("g")
+        .style("fill", 
+          (d,i)->
+            return colors(i)
+        )
+
+       svg.call(tip)
+
+       rects = groups.selectAll("rect")
+        .data(
+          (d)->
+            return d
+        )
+        .enter()
+        .append("rect")
+        .attr("x",
+          (d,i)->
+            return xScale(i)
+        )
+        .attr("y",
+          (d)->
+            return height + padding.bottom - (height - yScale(d.y0)) - (height - yScale(d.y))
+        )
+        .attr("height",
+          (d)->
+            return height - padding.bottom - yScale(d.y)
+        )
+        .attr("width", xScale.rangeBand())
+        .text(
+          (d)->
+            return height - yScale(d.y)
+        )
+        .on "mouseover", (d)->
+          jQuery(".d3-tip").css("pointer-events", "none")
+          tip.show(d)
+        .on "mouseout", (d)->
+          tip.hide(d)
+
+
+       svg.selectAll("circle")
+        .data(fruit_nums)
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("cx", width - 40)
+        .attr("cy", 
+          (d,i)->
+            return height - 20 * i - padding.bottom
+        )
+        .attr("r", 5)
+        .style("fill", 
+          (d,i)->
+            return colors(i)
+        )
+
+       svg.selectAll("text")
+        .data(@props.data.items)
+        .enter()
+        .append("text")
+        .attr("class", "text")
+        .attr("x", width - 35)
+        .attr("y",
+          (d,i)->
+            return height - 20 * i  - 45
+        )
+        .text(
+          (d)->
+            return d.name
+        )
+
+       svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (height - padding.bottom) + ")")
+        .text(
+          (d)->
+            return d
+        )
+        .call(xAxis)
+        
+       svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + padding.left + ",0)")
+        .call(yAxis)
