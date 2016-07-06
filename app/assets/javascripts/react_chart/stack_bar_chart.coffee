@@ -5,23 +5,25 @@
      </div>
 
   componentDidMount: ->
-     a = [
-      { x: "北京", y: 5 },
-      { x: "上海", y: 4 },
-      { x: "广州", y: 2 },
-     ]
-     b = [
-      { x: "北京", y: 12 },
-      { x: "上海", y: 0 },
-      { x: "广州", y: 16 },
-     ]
-     c = [
-      { x: "北京", y: 6 },
-      { x: "上海", y: 15 },
-      { x: "广州", y: 14 },
-     ]
+     fruit_nums = []
+     for item in @props.data.items
+      fruit = []
+      for sale_data in item.nums
+        sale_data = 
+          x: sale_data.category_value
+          y: sale_data.num
+        fruit.push(sale_data)
+      fruit_nums.push(fruit)
 
-     dataset = [a,b,c]
+     city_array = []
+     for sale_data in @props.data.items[0].nums
+      city_array.push(sale_data.category_value)
+
+
+     fruit_name_array = []
+     for item in @props.data.items
+      fruit_name_array.push(item.name)
+
      width = 500
      height = 600
      padding = {left:50, right:50, top:50, bottom:50}
@@ -33,7 +35,13 @@
       .attr('class', 'd3-tip')
       .offset([-10, 0])
       .html (d)->
-        return d.x + ":" + d.y
+        for i in [0..city_array.length - 1]
+          if city_array[i] == d.x
+            data_str = ""
+            for j in [0..fruit_name_array.length - 1]
+              data_str = data_str + "<li>" + fruit_name_array[j] + ":" + fruit_nums[j][i].y + "</li>"
+                  
+            return "<div>" + d.x + "</div>" + "<ul>" + data_str + "</ul>" 
 
      svg = d3.select(".stack-bar-chart")
       .append("svg")
@@ -42,7 +50,7 @@
 
      stack = d3.layout.stack()
 
-     stack(dataset)
+     stack(fruit_nums)
      # 在y轴上绘制
      # yScale = d3.scale.ordinal()
      #   .domain(d3.range(dataset[0].length))
@@ -88,16 +96,16 @@
      
      #在x轴上绘制
      xScale = d3.scale.ordinal()
-      .domain(d3.range(dataset[0].length))
+      .domain(d3.range(fruit_nums[0].length))
       .rangeRoundBands([padding.left, width - padding.right],0.05)
 
      rScale = d3.scale.ordinal()
-      .domain(["","北京","上海","广州",""])
-      .range([padding.left,117, 248,379,width - padding.right],0.05)
+      .domain(city_array)
+      .rangeRoundBands([padding.left, width - padding.right],0.05)
 
      yScale = d3.scale.linear()
       .domain([0, 
-        d3.max(dataset,
+        d3.max(fruit_nums,
           (d)->
             return d3.max(d,
               (d)->
@@ -116,7 +124,7 @@
       .orient("left")
      
      groups = svg.selectAll("g")
-      .data(dataset)
+      .data(fruit_nums)
       .enter()
       .append("g")
       .style("fill", 
@@ -151,12 +159,12 @@
           return height - yScale(d.y)
       )
       .on "mouseover", (d)->
-        tip.show(d, yScale(d.y))
+        tip.show(d)
       .on "mouseout", (d)->
         tip.hide(d)
 
      svg.selectAll("circle")
-      .data(dataset)
+      .data(fruit_nums)
       .enter()
       .append("circle")
       .attr("class", "circle")
@@ -172,7 +180,7 @@
       )
 
      svg.selectAll("text")
-      .data(dataset)
+      .data(@props.data.items)
       .enter()
       .append("text")
       .attr("class", "text")
@@ -182,19 +190,13 @@
           return height - 20 * i  - 45
       )
       .text(
-        (d,i)->
-          switch i
-            when 0
-              return "苹果"
-            when 1
-              return "香蕉"
-            when 2
-              return "橘子"
+        (d)->
+          return d.name
       )
 
      svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0,550)")
+      .attr("transform", "translate(0," + (height - padding.bottom) + ")")
       .text(
         (d)->
           return d
@@ -203,5 +205,5 @@
       
      svg.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(50,0)")
+      .attr("transform", "translate(" + padding.left + ",0)")
       .call(yAxis)
