@@ -68,7 +68,7 @@
     svg_g.append('g')
       .attr('class', 'axis')
       .attr('transform', 'translate(0,' + (height - padding.bottom - padding.top) + ')')
-      .call(x_axis);
+      .call(x_axis)
     svg_g.append('g')
       .attr('class', 'axis')
       .call(y_axis)
@@ -103,9 +103,9 @@
       .enter()
       .append("text")
       .attr "x", (d, i)->
-        return x_scale(dataset.x[0]) - padding.left/2  
+        return x_scale(dataset.x[0]) - padding.left / 2  
       .attr "y", (d, i)->
-        return (height - padding.top - padding.bottom)/2
+        return (height - padding.top - padding.bottom) / 2
       .text (d)->
         return d
       .attr "transform", (d)->
@@ -245,9 +245,9 @@
     .enter()
     .append("text")
     .attr "x", (d, i)->
-      return x_scale(0) - padding.left/2  
+      return x_scale(0) - padding.left / 2  
     .attr "y", (d, i)->
-      return (height - padding.top - padding.bottom)/2
+      return (height - padding.top - padding.bottom) / 2
     .text (d)->
       return d
     .attr "transform", (d)->
@@ -261,9 +261,9 @@
     .enter()
     .append("text")
     .attr "x", (d, i)->
-     return x_scale(d3.max(dataset.x)/2)
+     return x_scale(d3.max(dataset.x) / 2)
     .attr "y", (d, i)->
-      return height - padding.top - padding.bottom + padding.bottom/2
+      return height - padding.top - padding.bottom + padding.bottom / 2
     .text (d)->
       return d
     .attr "fill", "#888888"
