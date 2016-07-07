@@ -31,16 +31,15 @@
     
 
     tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([100,0])
-    .html (d)->
-      for i in [0..city_array.length - 1]
-        if city_array[i] == d.x
-          data_str = ""
-          for j in [0..fruit_name_array.length - 1]
-            data_str = data_str + "<li>" + fruit_name_array[j] + ":" + fruit_nums[j][i].y + "</li>"
-                  
-          return "<div>" + d.x + "</div>" + "<ul>" + data_str + "</ul>" 
+      .attr('class', 'd3-tip')
+      .offset([100,0])
+      .html (d)->
+        for i in [0..city_array.length - 1]
+          if city_array[i] == d.x
+            data_str = ""
+            for j in [0..fruit_name_array.length - 1]
+              data_str = data_str + "<li>" + fruit_name_array[j] + ":" + fruit_nums[j][i].y + "</li>"         
+        return "<div>" + d.x + "</div>" + "<ul>" + data_str + "</ul>" 
 
     svg = d3.select(".stack-bar-chart")
       .append("svg")
