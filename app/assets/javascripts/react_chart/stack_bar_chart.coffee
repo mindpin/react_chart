@@ -33,7 +33,6 @@
     tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([100,0])
-    .style("pointer-events", "none")
     .html (d)->
       for i in [0..city_array.length - 1]
         if city_array[i] == d.x
@@ -119,6 +118,7 @@
         )
         .on "mouseover", (d)->
           tip.show(d)
+          jQuery(".d3-tip").css("pointer-events", "none")
         .on "mouseout", (d)->
           tip.hide(d)
 
@@ -233,6 +233,7 @@
         )
         .on "mouseover", (d)->
           tip.show(d)
+          jQuery(".d3-tip").css("pointer-events", "none")
         .on "mouseout", (d)->
           tip.hide(d)
 
