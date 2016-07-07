@@ -1,12 +1,12 @@
 @ReactChart ||= {}
 @ReactChart.StackBarChart = React.createClass
   render: ->
-     <div className="stack-bar-chart">
-     </div>
+    <div className="stack-bar-chart">
+    </div>
 
   componentDidMount: ->
-     fruit_nums = []
-     for item in @props.data.items
+    fruit_nums = []
+    for item in @props.data.items
       fruit = []
       for sale_data in item.nums
         sale_data = 
@@ -15,55 +15,54 @@
         fruit.push(sale_data)
       fruit_nums.push(fruit)
 
-     city_array = []
-     for sale_data in @props.data.items[0].nums
+    city_array = []
+    for sale_data in @props.data.items[0].nums
       city_array.push(sale_data.category_value)
 
 
-     fruit_name_array = []
-     for item in @props.data.items
+    fruit_name_array = []
+    for item in @props.data.items
       fruit_name_array.push(item.name)
 
-     width = 500
-     height = 600
-     padding = {left:50, right:50, top:50, bottom:50}
-     colors = d3.scale
-       .category10()
+    width = 500
+    height = 600
+    padding = {left:50, right:50, top:50, bottom:50}
+    colors = d3.scale.category10()
+    
 
-
-     tip = d3.tip()
-      .attr('class', 'd3-tip')
-      .offset([100, 0])
-      .style("pointer-events", "none")
-      .html (d)->
-        for i in [0..city_array.length - 1]
-          if city_array[i] == d.x
-            data_str = ""
-            for j in [0..fruit_name_array.length - 1]
-              data_str = data_str + "<li>" + fruit_name_array[j] + ":" + fruit_nums[j][i].y + "</li>"
+    tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([100,0])
+    .style("pointer-events", "none")
+    .html (d)->
+      for i in [0..city_array.length - 1]
+        if city_array[i] == d.x
+          data_str = ""
+          for j in [0..fruit_name_array.length - 1]
+            data_str = data_str + "<li>" + fruit_name_array[j] + ":" + fruit_nums[j][i].y + "</li>"
                   
-            return "<div>" + d.x + "</div>" + "<ul>" + data_str + "</ul>" 
+          return "<div>" + d.x + "</div>" + "<ul>" + data_str + "</ul>" 
 
-     svg = d3.select(".stack-bar-chart")
+    svg = d3.select(".stack-bar-chart")
       .append("svg")
       .attr("width", width)
       .attr("height", height)
 
-     stack = d3.layout.stack()
+    stack = d3.layout.stack()
 
-     stack(fruit_nums)
+    stack(fruit_nums)
 
-     if @props.data.type == "vertical"
-       # 在y轴上绘制
-       yScale = d3.scale.ordinal()
-         .domain(d3.range(fruit_nums[0].length))
-         .rangeRoundBands([padding.bottom,height - padding.top],0.05)
+    if @props.data.type == "vertical"
+      # 在y轴上绘制
+      yScale = d3.scale.ordinal()
+        .domain(d3.range(fruit_nums[0].length))
+        .rangeRoundBands([padding.bottom,height - padding.top],0.05)
 
-       rScale = d3.scale.ordinal()
-         .domain(city_array)
-         .rangeRoundBands([padding.bottom,height - padding.top],0.05)
+      rScale = d3.scale.ordinal()
+        .domain(city_array)
+        .rangeRoundBands([padding.bottom,height - padding.top],0.05)
 
-       xScale = d3.scale.linear()
+      xScale = d3.scale.linear()
         .domain([0, 
           d3.max(fruit_nums,
             (d)->
@@ -75,15 +74,15 @@
         ])
         .range([padding.left, width - padding.right])
 
-       xAxis = d3.svg.axis()
+      xAxis = d3.svg.axis()
         .scale(xScale)
         .orient("bottom")
 
-       yAxis = d3.svg.axis()
+      yAxis = d3.svg.axis()
         .scale(rScale)
         .orient("left")
 
-       groups = svg.selectAll("g")
+      groups = svg.selectAll("g")
         .data(fruit_nums)
         .enter()
         .append("g")
@@ -92,9 +91,9 @@
             return colors(i)
         )
 
-       svg.call(tip)
+      svg.call(tip)
 
-       rects = groups.selectAll("rect")
+      rects = groups.selectAll("rect")
         .data(
           (d)->
             return d
@@ -123,7 +122,7 @@
         .on "mouseout", (d)->
           tip.hide(d)
 
-       svg.selectAll("circle")
+      svg.selectAll("circle")
         .data(fruit_nums)
         .enter()
         .append("circle")
@@ -139,7 +138,7 @@
             return colors(i)
         )
 
-       svg.selectAll("text")
+      svg.selectAll("text")
         .data(@props.data.items)
         .enter()
         .append("text")
@@ -154,30 +153,30 @@
             return d.name
         )
 
-       svg.append("g")
+      svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0,550)")
+        .attr("transform", "translate(0,#{height - padding.bottom })")
         .call(xAxis)
         
-       svg.append("g")
+      svg.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(50,0)")
+        .attr("transform", "translate(#{padding.left},0)")
         .text(
           (d)->
             return d
         )
         .call(yAxis)
-     if @props.data.type == "horizontal"
-       # 在x轴上绘制
-       xScale = d3.scale.ordinal()
+    if @props.data.type == "horizontal"
+      # 在x轴上绘制
+      xScale = d3.scale.ordinal()
         .domain(d3.range(fruit_nums[0].length))
         .rangeRoundBands([padding.left, width - padding.right],0.05)
 
-       rScale = d3.scale.ordinal()
+      rScale = d3.scale.ordinal()
         .domain(city_array)
         .rangeRoundBands([padding.left, width - padding.right],0.05)
 
-       yScale = d3.scale.linear()
+      yScale = d3.scale.linear()
         .domain([0, 
           d3.max(fruit_nums,
             (d)->
@@ -189,15 +188,15 @@
         ])
         .range([height - padding.bottom, padding.top])
 
-       xAxis = d3.svg.axis()
+      xAxis = d3.svg.axis()
         .scale(rScale)
         .orient("bottom")
 
-       yAxis = d3.svg.axis()
+      yAxis = d3.svg.axis()
         .scale(yScale)
         .orient("left")
        
-       groups = svg.selectAll("g")
+      groups = svg.selectAll("g")
         .data(fruit_nums)
         .enter()
         .append("g")
@@ -206,9 +205,9 @@
             return colors(i)
         )
 
-       svg.call(tip)
+      svg.call(tip)
 
-       rects = groups.selectAll("rect")
+      rects = groups.selectAll("rect")
         .data(
           (d)->
             return d
@@ -233,13 +232,11 @@
             return height - yScale(d.y)
         )
         .on "mouseover", (d)->
-          jQuery(".d3-tip").css("pointer-events", "none")
           tip.show(d)
         .on "mouseout", (d)->
           tip.hide(d)
 
-
-       svg.selectAll("circle")
+      svg.selectAll("circle")
         .data(fruit_nums)
         .enter()
         .append("circle")
@@ -255,7 +252,7 @@
             return colors(i)
         )
 
-       svg.selectAll("text")
+      svg.selectAll("text")
         .data(@props.data.items)
         .enter()
         .append("text")
@@ -270,7 +267,7 @@
             return d.name
         )
 
-       svg.append("g")
+      svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height - padding.bottom) + ")")
         .text(
@@ -279,7 +276,7 @@
         )
         .call(xAxis)
         
-       svg.append("g")
+      svg.append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + padding.left + ",0)")
         .call(yAxis)
