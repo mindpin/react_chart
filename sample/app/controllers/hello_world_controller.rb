@@ -8,7 +8,7 @@ class HelloWorldController < ApplicationController
 
   def stack_bar_chart
     react_data = {
-      type: "vertical",
+      type: "horizontal",
       bottom_name: "水果种类",
       height_name: "销售量",
       category_name: "城市",
