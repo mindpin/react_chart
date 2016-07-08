@@ -72,9 +72,9 @@
       ])
       .range([start, end])
   
-  add_xAxis: (svg,xScale,end)->
+  add_xAxis: (svg,rScale,end)->
     xAxis = d3.svg.axis()
-        .scale(xScale)
+        .scale(rScale)
         .orient("bottom")
 
     svg.append("g")
@@ -152,7 +152,7 @@
       #设置y轴比例尺
       yScale = @ordinal_scale(d3.range(fruit_nums[0].length),height - padding.bottom,padding.top)
 
-      #设置x轴的刻度
+      #设置y轴的刻度
       rScale = @ordinal_scale(city_array,height - padding.bottom,padding.top)
       
       #设置x轴比例尺
@@ -202,7 +202,7 @@
       @add_xAxis(svg,xScale,height - padding.bottom)
 
       #绘制y轴
-      @add_yAxis(svg,yScale,padding.left)
+      @add_yAxis(svg,rScale,padding.left)
 
     # 垂直绘制
     if @props.data.type == "vertical"
@@ -259,7 +259,7 @@
           tip.hide(d)
 
       #绘制x轴
-      @add_xAxis(svg,xScale,height - padding.bottom)
+      @add_xAxis(svg,rScale,height - padding.bottom)
 
       #绘制y轴
       @add_yAxis(svg,yScale,padding.left)
