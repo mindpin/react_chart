@@ -3,4 +3,5 @@ Rails.application.routes.draw do
 
   get "/:controller", action: "index"
   get "/bar_chart", to: "bar_chart#index"
+  get "/load_bar_chart", to: "bar_chart#load_bar_chart"
 end
