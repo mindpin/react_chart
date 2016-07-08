@@ -9,19 +9,19 @@ class HistogramController < ApplicationController
         {
             name: "语文",
             nums: random_num()
-        },{
+        }, {
             name: "化学",
             nums: random_num()
-        },{
+        }, {
             name: "数学",
             nums: random_num()
-        },{
+        }, {
             name: "英语",
             nums: random_num()
-        },{
+        }, {
             name: "生物",
             nums: random_num()
-        },{
+        }, {
             name: "物理",
             nums: random_num()
         }
