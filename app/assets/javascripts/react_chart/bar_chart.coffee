@@ -27,14 +27,31 @@
       dataset.y.push(item.num)
       dataset.x.push(item.name)
 
+    # 3写入隐藏的指示文字并且算出最长长度来确定 padding-right
+    d3.selectAll(".hidden-index-text")
+      .data(dataset.x)
+      .enter()
+      .append("text")
+      .attr('class', 'hidden-index-text')
+      .attr("dx",100)
+      .attr("dy",100)
+      .text (d)->
+        return d
+
+    max_index_text_width = 0
+    for x in d3.selectAll('.hidden-index-text')[0]
+      if x.offsetWidth > max_index_text_width
+        max_index_text_width = x.offsetWidth  
+    index_text_circle_r = 5
+
     padding =  
       top: 100, 
-      right: 100, 
+      right: index_text_circle_r * 2 + max_index_text_width + 20, 
       bottom: 100, 
       left: 100 
-
-    width  = 700
-    height = 600
+    # 1 设置适应父级长高
+    width  = jQuery(".bar-chart").width()
+    height = jQuery(".bar-chart").height()
 
     tip = d3.tip()
       .attr('class', 'd3-tip')
@@ -66,12 +83,17 @@
       .orient('left')
 
     svg_g.append('g')
-      .attr('class', 'axis')
+      .attr('class', 'axis x_scale')
       .attr('transform', 'translate(0,' + (height - padding.bottom - padding.top) + ')')
       .call(x_axis)
     svg_g.append('g')
       .attr('class', 'axis')
       .call(y_axis)
+
+    # 2扭动字体
+    d3.selectAll('.x_scale text')
+    .attr "transform", (d)->
+        return "rotate(7,0,0)"
 
     rectMargin = 3
 
@@ -132,7 +154,8 @@
       .data(dataset.x)
       .enter()
       .append("text")
-      .attr("dx",  (width - padding.left - padding.right) * 1.07)
+      .attr('class', 'index-text')
+      .attr("dx",  (width - padding.left - padding.right) + 20)
       .attr "dy", (d, i)->
         return height - padding.top - padding.bottom  - i * 20
       .text (d)->
@@ -144,10 +167,10 @@
       .enter()
       .append('circle')
       .attr 'cx', (d)->
-        return   (width - padding.left - padding.right) * 1.05
+        return   (width - padding.left - padding.right) + 10 
       .attr 'cy', (d, i)->
         return height - padding.top - padding.bottom  - i * 20
-      .attr('r', 5)
+      .attr('r', index_text_circle_r)
       .attr 'fill', (d, i)=>
         return @getColor(i)
 
@@ -280,6 +303,8 @@
         return height - padding.top - padding.bottom  - i * 20
       .text (d)->
         return d
+
+
 
     # 右侧指示圆点
     svg_g.selectAll('index-text-circle')
