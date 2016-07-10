@@ -186,15 +186,33 @@
       dataset.x.push(item.num)
       dataset.y.push(item.name)
 
-    # 1 设置画布和padding
+
+    d3.selectAll(".hidden-index-text")
+      .data(dataset.y)
+      .enter()
+      .append("text")
+      .attr('class', 'hidden-index-text')
+      .attr("dx",100)
+      .attr("dy",100)
+      .text (d)->
+        return d
+
+    max_index_text_width = 0
+    for x in d3.selectAll('.hidden-index-text')[0]
+      if x.offsetWidth > max_index_text_width
+        max_index_text_width = x.offsetWidth  
+    index_text_circle_r = 5
+
+
     padding =  
       top: 100, 
-      right: 100, 
+      right: index_text_circle_r * 2 + max_index_text_width + 20, 
       bottom: 100, 
       left: 100 
 
-    width  = 700
-    height = padding.top +  padding.bottom + item_area_length * dataset.x.length
+    width  = jQuery(".bar-chart").width()
+    height = jQuery(".bar-chart").height()
+    item_area_length = (height - padding.top -  padding.bottom) / dataset.x.length
     
     tip = d3.tip()
       .attr('class', 'd3-tip')
@@ -239,7 +257,7 @@
       .attr("class", "axis")
       .call(y_axis)
 
-    rectHeight = (item_area_length - item_length)/2
+    rectHeight = (item_area_length - item_length) / 2
     svg_g.selectAll("rect")
       .data(dataset.x)
       .enter()
@@ -262,7 +280,7 @@
       .on 'mouseout', (d)->
         tip.hide(d)
 
-
+  # xy轴信息 
     y_scale_msg = svg_g.selectAll(".y-scale-msg")
     .data([@props.data.bottom_name])
     .enter()
@@ -292,19 +310,16 @@
     .attr "fill", "#888888"
     .attr "font-size", "17"
 
-
     # 右侧指示文本
     svg_g.selectAll("index-text")
       .data(dataset.y)
       .enter()
       .append("text")
-      .attr("dx", x_scale(d3.max(dataset.x) * 1.07))
+      .attr("dx", (width - padding.left - padding.right) + 20)
       .attr "dy", (d, i)->
         return height - padding.top - padding.bottom  - i * 20
       .text (d)->
         return d
-
-
 
     # 右侧指示圆点
     svg_g.selectAll('index-text-circle')
@@ -312,10 +327,10 @@
       .enter()
       .append('circle')
       .attr 'cx', (d)->
-        return x_scale(d3.max(dataset.x) * 1.05)
+        return  width - padding.left - padding.right + 10
       .attr 'cy', (d, i)->
         return height - padding.top - padding.bottom  - i * 20
-      .attr('r', 5)
+      .attr('r', index_text_circle_r)
       .attr 'fill', (d, i)=>
         return @getColor(i)
 
