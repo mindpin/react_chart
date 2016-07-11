@@ -1,7 +1,7 @@
 @ReactChart.Histogram = React.createClass
   
   color: (i)->
-    colors = ["steelblue", "#10FF33", "#4CC0FF", "#7843E8", "#5EFF88", "#A18FFF"]
+    colors = ["#361CE8", "#10FF33", "#4CC0FF", "#7843E8", "#5EFF88", "#A18FFF", "#A310E8", "#E87543", "#B9FFE1", "#FBFF9D", "#146FFF", "#F3FF14"]
     colors[i % colors.length]
 
   # 将数据转换成堆叠图所需格式
@@ -31,24 +31,20 @@
     grades_ary
 
 
-  # set_display_course_info: (y0, ele_y, location)->
-  #   if ele[num].y0 == 0
-  #     course_name = @props.data.items[0].name
-  #     msg += course_name + ": " + ele[num].y + "</br>"
-
-  # # 设置显示提示框信息
-  # set_display_tip_info: (num, dataset)->
-  #   msg = ""
-  #   console.log dataset
-  #   for ele in dataset
-  #     if ele[num].y0 == 0
-  #       course_name = @props.data.items[0].name
-  #       msg += course_name + ": " + ele[num].y + "</br>"
-  #     if ele[num].y0 == ele[]
-  #       course_name = @props.data.items[1].name
-  #       msg += course_name + ": " + ele[num].y + "</br>"
-      
-  #   msg
+  # 设置显示提示框信息
+  set_display_tip_info: (num, dataset)->
+    msg = ""
+    i = 0
+    for ele in dataset
+      if ele[num].y0 == 0
+        course_name = @props.data.items[0].name
+        msg += course_name + ": " + dataset[0][num].y + " 人</br>"
+      if i > 0
+        if ele[num].y0 == dataset[i - 1][num].y + dataset[i - 1][num].y0
+          course_name = @props.data.items[i].name
+          msg += course_name + ": " + dataset[i][num].y + " 人</br>"
+      i = i + 1
+    msg
 
 
   render: ->
@@ -123,27 +119,35 @@
       .html (d, i)=>
         switch d.x
           when 0 
-            msg = ""
-            for ele in dataset
-              console.log ele[0]
-              if ele[0].y0 == 0
-                course_name = @props.data.items[0].name
-                msg += course_name + ": " + ele[0].y + "</br>"
-              if ele[0].y0 == ele[0].y
-                course_name = @props.data.items[1].name
-                msg += course_name + ": " + ele[1].y + "</br>"
-
-            "<span>#{msg}</span>"
-            
-          # when 1
-          # when 2
-          # when 3
-          # when 4
-          # when 5
-          # when 6
-          # when 7
-          # when 8
-          # when 9
+            msg = @set_display_tip_info(0, dataset)
+            "<span>#{data_x_coordinate[0]}分</span></br><span>#{msg}</span>"
+          when 1
+            msg = @set_display_tip_info(1, dataset)
+            "<span>#{data_x_coordinate[1]}分</span></br><span>#{msg}</span>"
+          when 2
+            msg = @set_display_tip_info(2, dataset)
+            "<span>#{data_x_coordinate[2]}分</span></br><span>#{msg}</span>"
+          when 3
+            msg = @set_display_tip_info(3, dataset)
+            "<span>#{data_x_coordinate[3]}分</span></br><span>#{msg}</span>"
+          when 4
+            msg = @set_display_tip_info(4, dataset)
+            "<span>#{data_x_coordinate[4]}分</span></br><span>#{msg}</span>"
+          when 5
+            msg = @set_display_tip_info(5, dataset)
+            "<span>#{data_x_coordinate[5]}分</span></br><span>#{msg}</span>"
+          when 6
+            msg = @set_display_tip_info(6, dataset)
+            "<span>#{data_x_coordinate[6]}分</span></br><span>#{msg}</span>"
+          when 7
+            msg = @set_display_tip_info(7, dataset)
+            "<span>#{data_x_coordinate[7]}分</span></br><span>#{msg}</span>"
+          when 8
+            msg = @set_display_tip_info(8, dataset)
+            "<span>#{data_x_coordinate[8]}分</span></br><span>#{msg}</span>"
+          when 9
+            msg = @set_display_tip_info(9, dataset)
+            "<span>#{data_x_coordinate[9]}分</span></br><span>#{msg}</span>"
 
     svg.call(tip)
 
@@ -224,11 +228,11 @@
         @color(i)
 
       # 罗列科目
-    svg.selectAll(".text")
+    svg.selectAll(".text-course")
       .data(data_second)
       .enter()
       .append("text")
-      .attr("class", ".text")
+      .attr("class", "text-course")
       .attr "dy", (d,i)->
         height - padding.bottom - 15 - i * 20
       .attr "dx", (d)->
@@ -236,6 +240,8 @@
       .text (d)->
         d
 
+    # 获取到 text
+    y_length_text = d3.selectAll("svg text")
     # 右侧导读标题
     category = []
     category.push(@props.data.category_name)
@@ -243,12 +249,12 @@
       .data(category)
       .enter()
       .append("text")
-      .attr("class", ".category-text")
+      .attr("class", "category-text")
       .attr("dx", (d,i)->
         width - padding.right + 3
       )
       .attr("dy", (d)->
-        height - padding.bottom - 140
+        height - padding.bottom - (height - (y_length_text[0][y_length_text[0].length - 1].attributes.dy.value))
       )
       .text (d)->
         d
