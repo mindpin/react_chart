@@ -1,5 +1,5 @@
+@ReactChart ||= {}
 @ReactChart.Histogram = React.createClass
-  
   color: (i)->
     colors = ["#361CE8", "#10FF33", "#4CC0FF", "#7843E8", "#5EFF88", "#A18FFF", "#A310E8", "#E87543", "#B9FFE1", "#FBFF9D", "#146FFF", "#F3FF14"]
     colors[i % colors.length]
@@ -19,10 +19,14 @@
 
   # 将成绩按区间计数
   dataset_digital_to_histogram: (data_ary)->
+    score_val = @min_and_max_ary()
     grades_ary = []
-    bin_num = 10
+    if @props.data.tick == undefined || @props.data.tick == 0
+      bin_num = 10
+    else
+      bin_num = @props.data.tick
     histogram = d3.layout.histogram()
-      .range([0, 100])
+      .range([d3.min(score_val), d3.max(score_val)])
         .bins(bin_num)
       .frequency(true)
     for category in data_ary
@@ -30,6 +34,10 @@
       grades_ary.push(data_num)
     grades_ary
 
+  # 显示每个矩形的信息
+  set_rect_display_info: (num, dataset, subsection_val)->
+    msg = @set_display_tip_info(num, dataset)
+    "<span>#{subsection_val[num]}分</span></br><span>#{msg}</span>"
 
   # 设置显示提示框信息
   set_display_tip_info: (num, dataset)->
@@ -46,14 +54,38 @@
       i = i + 1
     msg
 
+  # 将所有科目的分数的最小值与最大值存为一个数组
+  min_and_max_ary: ()->
+    score_ary = []
+    for score in @props.data.items
+      score_ary.push(d3.min(score.nums))
+      score_ary.push(d3.max(score.nums))
+    score_ary
+
+  # 设置分数的显示区间
+  set_score_subsection: ()->
+    if @props.data.tick == undefined || @props.data.tick == 0
+      bin_num = 10
+    else
+      bin_num = @props.data.tick
+
+    score_ary_value = @min_and_max_ary()
+    bin = Math.ceil(d3.max(score_ary_value) / bin_num)
+    sub_value = d3.min(score_ary_value)
+    subsection = []
+    for sub in [1..bin_num]
+      subsection.push("#{sub_value}-#{sub_value + bin}")
+      sub_value = Math.ceil(sub_value + bin)
+
+    subsection
 
   render: ->
     <div className="histogram">
     </div>
 
   componentDidMount: ->
-    width = 600
-    height = 600
+    width = jQuery(".histogram").width()
+    height = jQuery(".histogram").height()
 
     # 生成画布
     svg = d3.select(".histogram")
@@ -107,9 +139,9 @@
       .domain(d3.range(dataset[0].length))
       .rangeRoundBands([40, width - padding.right])
     # x 轴坐标比例尺
-    data_x_coordinate = ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90', '90-100']
+    subsection_val = @set_score_subsection()
     r_scale = d3.scale.ordinal()
-      .domain(data_x_coordinate) 
+      .domain(subsection_val)
       .rangeRoundBands([0, width - padding.right - padding.left])     
 
     # 设置提示
@@ -117,37 +149,7 @@
       .attr("class", "d3-tip")
       .offset([-5,0])
       .html (d, i)=>
-        switch d.x
-          when 0 
-            msg = @set_display_tip_info(0, dataset)
-            "<span>#{data_x_coordinate[0]}分</span></br><span>#{msg}</span>"
-          when 1
-            msg = @set_display_tip_info(1, dataset)
-            "<span>#{data_x_coordinate[1]}分</span></br><span>#{msg}</span>"
-          when 2
-            msg = @set_display_tip_info(2, dataset)
-            "<span>#{data_x_coordinate[2]}分</span></br><span>#{msg}</span>"
-          when 3
-            msg = @set_display_tip_info(3, dataset)
-            "<span>#{data_x_coordinate[3]}分</span></br><span>#{msg}</span>"
-          when 4
-            msg = @set_display_tip_info(4, dataset)
-            "<span>#{data_x_coordinate[4]}分</span></br><span>#{msg}</span>"
-          when 5
-            msg = @set_display_tip_info(5, dataset)
-            "<span>#{data_x_coordinate[5]}分</span></br><span>#{msg}</span>"
-          when 6
-            msg = @set_display_tip_info(6, dataset)
-            "<span>#{data_x_coordinate[6]}分</span></br><span>#{msg}</span>"
-          when 7
-            msg = @set_display_tip_info(7, dataset)
-            "<span>#{data_x_coordinate[7]}分</span></br><span>#{msg}</span>"
-          when 8
-            msg = @set_display_tip_info(8, dataset)
-            "<span>#{data_x_coordinate[8]}分</span></br><span>#{msg}</span>"
-          when 9
-            msg = @set_display_tip_info(9, dataset)
-            "<span>#{data_x_coordinate[9]}分</span></br><span>#{msg}</span>"
+        @set_rect_display_info(d.x, dataset, subsection_val)
 
     svg.call(tip)
 

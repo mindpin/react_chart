@@ -1,10 +1,42 @@
 class HistogramController < ApplicationController
   def index
     @component_name = "ReactChart.Histogram"
-    @react_data = {
+    @component_data = {
       bottom_name: "成绩",
       height_name: "人数",
       category_name: "科目",
+      tick: 11,
+      items: [
+        {
+            name: "语文",
+            nums: random_num()
+        }, {
+            name: "化学",
+            nums: random_num()
+        }, {
+            name: "数学",
+            nums: random_num()
+        }, {
+            name: "英语",
+            nums: random_num()
+        }, {
+            name: "生物",
+            nums: random_num()
+        }, {
+            name: "物理",
+            nums: random_num()
+        }
+      ]
+    }
+  end
+
+  def histogram_father
+    @component_name = "ReactChart.HistogramFather"
+    @component_data = {
+      bottom_name: "成绩",
+      height_name: "人数",
+      category_name: "科目",
+      tick: 11,
       items: [
         {
             name: "语文",
