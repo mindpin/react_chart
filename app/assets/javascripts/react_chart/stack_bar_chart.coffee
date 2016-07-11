@@ -1,5 +1,4 @@
-@ReactChart ||= {}
-@ReactChart.StackBarChart = React.createClass
+@StackBarChart = React.createClass
   render: ->
     <div className="stack-bar-chart">
     </div>
@@ -57,7 +56,7 @@
   ordinal_scale:(range,start,end)->
     d3.scale.ordinal()
       .domain(range)
-      .rangeRoundBands([start,end],0.05)
+      .rangeRoundBands([start,end],0.5)
 
   linear_scale: (dataset,start,end)->
     d3.scale.linear()

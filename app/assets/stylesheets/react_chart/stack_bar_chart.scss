@@ -1,12 +1,13 @@
 .stack-bar-chart{
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
   svg {
     width: 100%;
     height: 100%;
     .axis path,
     .axis line {
       fill: none;
+      shape-rendering: crispEdges;
       stroke: #000;
     }
   }  
