@@ -49,9 +49,14 @@
       right: index_text_circle_r * 2 + max_index_text_width + 20, 
       bottom: 100, 
       left: 100 
+
     # 1 设置适应父级长高
     width  = jQuery(".bar-chart").width()
     height = jQuery(".bar-chart").height()
+
+    item_area_length = (height - padding.left -  padding.right) / dataset.x.length
+    item_length = @props.data.item_length
+    rectMargin = (item_area_length - item_length) / 2
 
     tip = d3.tip()
       .attr('class', 'd3-tip')
@@ -94,8 +99,6 @@
     d3.selectAll('.x_scale text')
     .attr "transform", (d)->
         return "rotate(7,0,0)"
-
-    rectMargin = 3
 
     svg_g.selectAll('.bar')
       .data(dataset.y)
@@ -141,9 +144,9 @@
       .enter()
       .append("text")
       .attr "x", (d, i)->
-        return (height - padding.left - padding.right) /2
+        return (height - padding.left - padding.right) / 2
       .attr "y", (d, i)->
-        return height - padding.top - padding.bottom + padding.bottom/2
+        return height - padding.top - padding.bottom + padding.bottom / 2
       .text (d)->
         return d
       .attr "fill", "#888888"
@@ -202,7 +205,6 @@
       if x.offsetWidth > max_index_text_width
         max_index_text_width = x.offsetWidth  
     index_text_circle_r = 5
-
 
     padding =  
       top: 100, 

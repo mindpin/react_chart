@@ -30,7 +30,7 @@ class BarChartController < ApplicationController
         {name: "香蕉",  num: 120 },
         {name: "梨子",  num: 90  },
         {name: "葡萄",  num: 220 },
-        {name: "葡萄12345", num: 220 },
+        {name: "葡萄1234", num: 220 },
         {name: "橘子",  num: 50  }
       ]
     }
