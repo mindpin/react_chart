@@ -30,8 +30,8 @@ class HistogramController < ApplicationController
     }
   end
 
-  def histogram_father
-    @component_name = "ReactChart.HistogramFather"
+  def histogram_example
+    @component_name = "ReactChart.HistogramExample"
     @component_data = {
       bottom_name: "成绩",
       height_name: "人数",

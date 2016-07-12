@@ -4,5 +4,5 @@ Rails.application.routes.draw do
   get "/:controller", action: "index"
 
   get "/histogram", to: "histogram#index"
-  get "/histogram_father", to:"histogram#histogram_father"
+  get "/histogram_example", to:"histogram#histogram_example"
 end
