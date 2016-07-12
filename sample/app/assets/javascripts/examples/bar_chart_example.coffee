@@ -1,5 +1,4 @@
-@ReactChart ||= {}
-@ReactChart.LoadBarChart = React.createClass
+@BarChartExample = React.createClass
   render: ->
     <div className="load-bar-chart">
       <div className="area1">
