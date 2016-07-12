@@ -11,3 +11,4 @@
 //= require semantic
 
 //= require react_chart/all
+//= require_tree ./examples

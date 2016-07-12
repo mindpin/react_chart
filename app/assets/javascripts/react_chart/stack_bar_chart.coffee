@@ -1,4 +1,5 @@
-@StackBarChart = React.createClass
+@ReactChart ||= {}
+@ReactChart.StackBarChart = React.createClass
   render: ->
     <div className="stack-bar-chart">
     </div>
