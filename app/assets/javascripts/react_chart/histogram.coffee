@@ -46,11 +46,11 @@
     for ele in dataset
       if ele[num].y0 == 0
         course_name = @props.data.items[0].name
-        msg += course_name + ": " + dataset[0][num].y + " 人</br>"
+        msg +=  "#{course_name}: #{dataset[0][num].y}人</br>"
       if i > 0
         if ele[num].y0 == dataset[i - 1][num].y + dataset[i - 1][num].y0
           course_name = @props.data.items[i].name
-          msg += course_name + ": " + dataset[i][num].y + " 人</br>"
+          msg += "#{course_name}: #{ dataset[i][num].y}人</br>"
       i = i + 1
     msg
 
@@ -75,7 +75,7 @@
     subsection = []
     for sub in [1..bin_num]
       subsection.push("#{sub_value}-#{sub_value + bin}")
-      sub_value = Math.ceil(sub_value + bin)
+      sub_value = sub_value + bin
 
     subsection
 
